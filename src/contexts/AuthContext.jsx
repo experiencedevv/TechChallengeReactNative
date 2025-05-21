@@ -1,15 +1,23 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
+  const [perfil, setPerfil] = useState(null);
 
-  const login = (newToken) => setToken(newToken);
-  const logout = () => setToken(null);
+  const login = async (newToken, perfilUsuario) => {
+    setToken(newToken);
+    setPerfil(perfilUsuario);
+  };
+
+  const logout = () => {
+    setToken(null);
+    setPerfil(null);
+  };
 
   return (
-    <AuthContext.Provider value={{ token, login, logout }}>
+    <AuthContext.Provider value={{ token, perfil, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

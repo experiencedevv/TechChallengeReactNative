@@ -1,35 +1,143 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button } from 'react-native';
-import api from '../services/api';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Dimensions,
+  ScrollView,
+  Alert,
+} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import AdminMenu from '../components/AdminMenu';
 
-export default function PostForm({ route, navigation }) {
-  const [titulo, setTitulo] = useState('');
-  const [conteudo, setConteudo] = useState('');
-  const isEdit = route.name === 'PostEdit';
+export default function PostEdit() {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { id, titulo: initialTitulo, descricao: initialDescricao } = route.params || {};
 
-  useEffect(() => {
-    if (isEdit) {
-      api.get(`/posts/${route.params.id}`).then(response => {
-        setTitulo(response.data.titulo);
-        setConteudo(response.data.conteudo);
-      });
+  const [titulo, setTitulo] = useState(initialTitulo || '');
+  const [descricao, setDescricao] = useState(initialDescricao || '');
+
+  const handleSalvar = () => {
+    if (!titulo || !descricao) {
+      Alert.alert('Atenção', 'Preencha todos os campos.');
+      return;
     }
-  }, []);
 
-  const handleSubmit = () => {
-    const postData = { titulo, conteudo, autor: 'professor1' };
-    const req = isEdit
-      ? api.put(`/posts/${route.params.id}`, postData)
-      : api.post('/posts', postData);
-
-    req.then(() => navigation.navigate('PostsList'));
+    // Aqui você pode integrar com sua API futuramente
+    Alert.alert('Post atualizado com sucesso!');
+    navigation.goBack();
   };
 
   return (
-    <View>
-      <TextInput placeholder="Título" value={titulo} onChangeText={setTitulo} />
-      <TextInput placeholder="Conteúdo" value={conteudo} onChangeText={setConteudo} multiline />
-      <Button title={isEdit ? "Atualizar" : "Criar"} onPress={handleSubmit} />
+    <View style={styles.container}>
+      <AdminMenu />
+
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <View style={styles.content}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.voltar}>Voltar</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.title}>Editar Post</Text>
+
+          <Text style={styles.label}>Título:</Text>
+          <TextInput
+            style={styles.input}
+            value={titulo}
+            onChangeText={setTitulo}
+            placeholder="Digite o título"
+            placeholderTextColor="#999"
+          />
+
+          <Text style={styles.label}>Descrição:</Text>
+          <TextInput
+            style={styles.textarea}
+            value={descricao}
+            onChangeText={setDescricao}
+            placeholder="Digite a descrição"
+            placeholderTextColor="#999"
+            multiline
+            numberOfLines={6}
+            textAlignVertical="top"
+          />
+
+          <TouchableOpacity style={styles.button} onPress={handleSalvar}>
+            <Text style={styles.buttonText}>Salvar</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.footer}>© 2025 by LearnPlus</Text>
+      </ScrollView>
     </View>
   );
 }
+
+const { width } = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scroll: {
+    alignItems: 'center',
+    paddingBottom: 40,
+  },
+  content: {
+    width: '90%',
+    maxWidth: 800,
+    marginTop: 32,
+    backgroundColor: '#f6f6f6',
+    padding: 24,
+    borderRadius: 12,
+  },
+  voltar: {
+    color: '#000',
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 24,
+  },
+  label: {
+    fontSize: 14,
+    marginBottom: 6,
+    color: '#000',
+  },
+  input: {
+    backgroundColor: '#ddd',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 20,
+    fontSize: 16,
+  },
+  textarea: {
+    backgroundColor: '#ddd',
+    borderRadius: 6,
+    padding: 10,
+    fontSize: 16,
+    height: 150,
+    marginBottom: 24,
+  },
+  button: {
+    backgroundColor: '#000',
+    alignSelf: 'flex-start',
+    paddingVertical: 10,
+    paddingHorizontal: 32,
+    borderRadius: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  footer: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 40,
+  },
+});
+

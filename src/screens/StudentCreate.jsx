@@ -1,17 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button } from 'react-native';
+import React from 'react';
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+} from 'react-native';
+import AdminMenu from '../components/AdminMenu';
+import UserForm from '../components/UserForm';
 
-export default function UserForm({ initialData = {}, onSubmit, label }) {
-  const [nome, setNome] = useState(initialData.nome || '');
-  const [email, setEmail] = useState(initialData.email || '');
-
-  const handleSave = () => onSubmit({ nome, email });
+export default function StudentCreate() {
+  const handleSubmit = (data) => {
+    console.log('Aluno criado:', data);
+    // Aqui você poderá chamar a API futuramente
+  };
 
   return (
-    <View>
-      <TextInput placeholder="Nome" value={nome} onChangeText={setNome} />
-      <TextInput placeholder="Email" value={email} onChangeText={setEmail} />
-      <Button title={label} onPress={handleSave} />
+    <View style={styles.container}>
+      <AdminMenu />
+
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <UserForm titulo="Adicionar Aluno" onSubmit={handleSubmit} />
+        <Text style={styles.footer}>© 2025 by LearnPlus</Text>
+      </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scroll: {
+    alignItems: 'center',
+    paddingBottom: 40,
+  },
+  footer: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 40,
+  },
+});
+
